@@ -4,43 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f766e" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <title>مناهج أقسام الجغرافية 2025-2026</title>
   <meta name="description" content="موقع تفاعلي مخصص للموبايل لعرض دليل تحديث مناهج أقسام الجغرافية 2025-2026" />
-  <link rel="manifest" href="manifest.webmanifest?v=20260524-2" />
-  <link rel="stylesheet" href="styles.css?v=20260524-2" />
-  <script>
-    (function () {
-      var VERSION = '20260524-2';
-      window.GEO_CURRICULUM_VERSION = VERSION;
-
-      // Clear the old mobile cache/service worker once, because the first release cached app.js and data-pages.json.
-      try {
-        var flag = 'geo-cache-cleared-' + VERSION;
-        if (!sessionStorage.getItem(flag)) {
-          sessionStorage.setItem(flag, '1');
-
-          if ('caches' in window) {
-            caches.keys().then(function (keys) {
-              return Promise.all(keys.map(function (key) { return caches.delete(key); }));
-            }).catch(function () {});
-          }
-
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-              return Promise.all(registrations.map(function (registration) {
-                return registration.unregister();
-              }));
-            }).then(function () {
-              setTimeout(function () { location.reload(); }, 250);
-            }).catch(function () {});
-          }
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -52,7 +19,7 @@
           <p>دليل 2025 - 2026</p>
         </div>
       </div>
-      <a class="pdf-btn" href="assets/geography-curriculum-2025-2026.pdf?v=20260524-2" target="_blank" rel="noopener">PDF</a>
+      <a class="pdf-btn" href="assets/geography-curriculum-2025-2026.pdf" target="_blank" rel="noopener">PDF</a>
     </header>
 
     <main>
@@ -62,7 +29,7 @@
         <p>تصفح المواد حسب المرحلة، ابحث داخل الدليل، وافتح مفردات كل مادة بسرعة من الهاتف.</p>
         <div class="quick-actions">
           <a href="#stages" class="primary-action">ابدأ التصفح</a>
-          <a href="assets/geography-curriculum-2025-2026.pdf?v=20260524-2" class="secondary-action" download>تحميل الدليل</a>
+          <a href="assets/geography-curriculum-2025-2026.pdf" class="secondary-action" download>تحميل الدليل</a>
         </div>
       </section>
 
@@ -81,14 +48,14 @@
 
       <section class="card guide-note">
         <h2>طريقة الاستخدام</h2>
-        <p>اختر المرحلة، ثم اضغط على المادة لعرض المفردات الأسبوعية. البحث يعمل داخل أسماء المواد والنصوص المدققة.</p>
+        <p>اختر المرحلة، ثم اضغط على المادة لعرض المفردات أو الصفحات المتعلقة بها. البحث يعمل داخل أسماء المواد والنص الكامل المستخرج من الدليل.</p>
       </section>
     </main>
 
     <nav class="bottom-nav" aria-label="تنقل سريع">
       <a href="#stages">المراحل</a>
       <a href="#search-section">البحث</a>
-      <a href="assets/geography-curriculum-2025-2026.pdf?v=20260524-2" target="_blank" rel="noopener">PDF</a>
+      <a href="assets/geography-curriculum-2025-2026.pdf" target="_blank" rel="noopener">PDF</a>
     </nav>
   </div>
 
@@ -104,7 +71,7 @@
     <div id="dialogContent" class="dialog-content"></div>
   </dialog>
 
-  <script src="curriculum-clean.js?v=20260524-2"></script>
-  <script src="app.js?v=20260524-2"></script>
+  <script src="curriculum-clean.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
