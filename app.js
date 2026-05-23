@@ -155,6 +155,66 @@ function subjectCard(s) {
   `;
 }
 
+const arabicWeekNames = [
+  'الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر',
+  'الحادي عشر','الثاني عشر','الثالث عشر','الرابع عشر','الخامس عشر','السادس عشر','السابع عشر','الثامن عشر','التاسع عشر','العشرون',
+  'الحادي والعشرون','الثاني والعشرون','الثالث والعشرون','الرابع والعشرون','الخامس والعشرون','السادس والعشرون','السابع والعشرون','الثامن والعشرون','التاسع والعشرون','الثلاثون'
+];
+
+function weekLabel(index) {
+  return `الأسبوع ${arabicWeekNames[index] || index + 1}`;
+}
+
+function cleanExtractedText(text = '') {
+  return text
+    .replace(/\s+/g, ' ')
+    .replace(/^[\d\s]+/, '')
+    .replace(/مفخدات|مفردات|الس شيج|السشيج/g, '')
+    .trim();
+}
+
+function splitByMarkers(text) {
+  const clean = cleanExtractedText(text);
+  const markerRegex = /(ا?لا?سبوع\s+[\u0600-\u06FF]+(?:\s+[\u0600-\u06FF]+){0,3}\s*:?\s*\d{0,2}\s*:?)|\(\s*\d{1,2}\s*\)|(?:^|\s)(\d{1,2})(?=\s+[\u0600-\u06FFA-Za-z])/g;
+  const matches = [...clean.matchAll(markerRegex)].map(m => ({ index: m.index, text: m[0].trim() }));
+
+  if (matches.length < 3) {
+    return clean ? [{ label: 'مفردات المادة', text: clean }] : [];
+  }
+
+  return matches.map((match, idx) => {
+    const next = matches[idx + 1]?.index ?? clean.length;
+    let chunk = clean.slice(match.index, next).trim();
+    chunk = chunk.replace(match.text, '').trim();
+    chunk = chunk.replace(/^[:\-–\)\(\s]+/, '').trim();
+    return {
+      label: weekLabel(idx),
+      text: chunk || match.text,
+    };
+  }).filter(item => item.text && item.text.length > 1).slice(0, 30);
+}
+
+function subjectWeeks(subject) {
+  const subjectPages = pagesRange(subject.pageStart, subject.pageEnd);
+  if (!subjectPages.length) {
+    return [{
+      label: 'ملاحظة',
+      text: 'لم يتم تحديد صفحة مفردات مستقلة لهذه المادة في الدليل. يمكنك استخدام البحث داخل الدليل أو فتح ملف PDF الكامل.',
+    }];
+  }
+  const raw = subjectPages.map(p => p.text || '').join(' ');
+  return splitByMarkers(raw);
+}
+
+function topicList(text = '') {
+  const clean = cleanExtractedText(text).replace(//g, '،');
+  const parts = clean
+    .split(/(?:\s*،\s*|\s*؛\s*|\s*\.\s*|\s+-\s+)/)
+    .map(x => x.trim())
+    .filter(x => x.length > 2);
+  return parts.length > 1 ? parts : [clean];
+}
+
 function openSubject(id) {
   const subject = stages.flatMap(s => s.subjects).find(s => s.id === id);
   if (!subject) return;
@@ -165,20 +225,63 @@ function openSubject(id) {
     <span>الساعات العملية: ${subject.practical}</span>
     <span>الوحدات: ${subject.units}</span>
   `;
-  const subjectPages = pagesRange(subject.pageStart, subject.pageEnd);
-  const content = subjectPages.length ? subjectPages.map(p => `
-    <details open>
-      <summary>صفحة ${p.page}</summary>
-      <p>${escapeHtml(p.text || 'لا يوجد نص مستخرج في هذه الصفحة.')}</p>
-    </details>
-  `).join('') : `
-    <details open>
-      <summary>ملاحظة</summary>
-      <p>لم يتم تحديد صفحة مفردات مستقلة لهذه المادة في النسخة الأولى. يمكنك استخدام البحث داخل الدليل أو فتح ملف PDF الكامل.</p>
-    </details>
+
+  const weeks = subjectWeeks(subject);
+  const pdfHref = `assets/geography-curriculum-2025-2026.pdf#page=${subject.pageStart || 1}`;
+
+  $('#dialogContent').innerHTML = `
+    <section class="week-picker-card">
+      <label for="weekSelect">اختر الأسبوع</label>
+      <div class="select-wrap">
+        <select id="weekSelect">
+          ${weeks.map((w, i) => `<option value="${i}">${escapeHtml(w.label || weekLabel(i))}</option>`).join('')}
+        </select>
+      </div>
+      ${weeks.length > 1 ? `
+        <div class="week-nav">
+          <button id="prevWeek" type="button">الأسبوع السابق</button>
+          <button id="nextWeek" type="button">الأسبوع التالي</button>
+        </div>
+      ` : ''}
+    </section>
+    <section id="weekView" class="week-view"></section>
+    <a class="page-link" href="${pdfHref}" target="_blank" rel="noopener">فتح الصفحة في PDF</a>
   `;
-  const pageLink = subject.pageStart ? `#page=${subject.pageStart}` : 'assets/geography-curriculum-2025-2026.pdf';
-  $('#dialogContent').innerHTML = content + `<a class="page-link" href="assets/geography-curriculum-2025-2026.pdf#page=${subject.pageStart || 1}" target="_blank" rel="noopener">فتح الصفحة في PDF</a>`;
+
+  const weekSelect = $('#weekSelect');
+  const weekView = $('#weekView');
+  const prevBtn = $('#prevWeek');
+  const nextBtn = $('#nextWeek');
+
+  function renderWeek(index) {
+    const item = weeks[index] || weeks[0];
+    const topics = topicList(item.text);
+    weekView.innerHTML = `
+      <div class="week-view-head">
+        <h3>${escapeHtml(item.label || weekLabel(index))}</h3>
+        ${weeks.length > 1 ? `<span>${index + 1} / ${weeks.length}</span>` : ''}
+      </div>
+      ${topics.length > 1 ? `
+        <ul class="topic-list">
+          ${topics.map(t => `<li>${escapeHtml(t)}</li>`).join('')}
+        </ul>
+      ` : `<p>${escapeHtml(topics[0] || '')}</p>`}
+    `;
+    if (prevBtn) prevBtn.disabled = index <= 0;
+    if (nextBtn) nextBtn.disabled = index >= weeks.length - 1;
+  }
+
+  weekSelect.addEventListener('change', () => renderWeek(Number(weekSelect.value)));
+  prevBtn?.addEventListener('click', () => {
+    weekSelect.value = Math.max(0, Number(weekSelect.value) - 1);
+    renderWeek(Number(weekSelect.value));
+  });
+  nextBtn?.addEventListener('click', () => {
+    weekSelect.value = Math.min(weeks.length - 1, Number(weekSelect.value) + 1);
+    renderWeek(Number(weekSelect.value));
+  });
+
+  renderWeek(0);
   $('#subjectDialog').showModal();
 }
 
