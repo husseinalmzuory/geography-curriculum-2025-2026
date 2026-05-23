@@ -194,7 +194,17 @@ function splitByMarkers(text) {
   }).filter(item => item.text && item.text.length > 1).slice(0, 30);
 }
 
+
+function cleanWeeksForSubject(subject) {
+  const key = `${subject.stageId}|${subject.name}`;
+  const weeks = window.cleanCurriculumWeeks?.[key];
+  if (!Array.isArray(weeks)) return null;
+  return weeks.map((text, idx) => ({ label: weekLabel(idx), text }));
+}
+
 function subjectWeeks(subject) {
+  const manual = cleanWeeksForSubject(subject);
+  if (manual) return manual;
   const subjectPages = pagesRange(subject.pageStart, subject.pageEnd);
   if (!subjectPages.length) {
     return [{
@@ -302,7 +312,10 @@ function runSearch() {
   if (!q) { resultsEl.classList.add('hidden'); resultsEl.innerHTML = ''; return; }
   const nq = normalize(q);
   const selectedStages = activeStage === 'all' ? stages : stages.filter(s => s.id === activeStage);
-  const subjects = selectedStages.flatMap(s => s.subjects).filter(s => normalize(`${s.name} ${s.stageTitle}`).includes(nq));
+  const subjects = selectedStages.flatMap(s => s.subjects).filter(s => {
+    const clean = (window.cleanCurriculumWeeks?.[`${s.stageId}|${s.name}`] || []).join(' ');
+    return normalize(`${s.name} ${s.stageTitle} ${clean}`).includes(nq);
+  });
   const pageMinMax = selectedStages.map(s => s.pages.split(' - ').map(Number));
   const pageHits = pages.filter(p => {
     const inStage = activeStage === 'all' || pageMinMax.some(([min,max]) => p.page >= min && p.page <= max);
