@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>مناهج أقسام الجغرافية 2025-2026</title>
+  <meta name="description" content="موقع تفاعلي مخصص للموبايل لعرض دليل تحديث مناهج أقسام الجغرافية 2025-2026" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">ج</span>
+        <div>
+          <h1>مناهج الجغرافية</h1>
+          <p>دليل 2025 - 2026</p>
+        </div>
+      </div>
+      <a class="pdf-btn" href="assets/geography-curriculum-2025-2026.pdf" target="_blank" rel="noopener">PDF</a>
+    </header>
+
+    <main>
+      <section class="hero card">
+        <p class="eyebrow">نسخة موبايل تفاعلية</p>
+        <h2>دليل تحديث مناهج أقسام الجغرافية لكليات التربية للعلوم الإنسانية</h2>
+        <p>تصفح المواد حسب المرحلة، ابحث داخل الدليل، وافتح مفردات كل مادة بسرعة من الهاتف.</p>
+        <div class="quick-actions">
+          <a href="#stages" class="primary-action">ابدأ التصفح</a>
+          <a href="assets/geography-curriculum-2025-2026.pdf" class="secondary-action" download>تحميل الدليل</a>
+        </div>
+      </section>
+
+      <section class="search-card card" id="search-section">
+        <label for="searchInput">بحث سريع</label>
+        <div class="search-row">
+          <input id="searchInput" type="search" placeholder="ابحث عن مادة، مفردة، أو كلمة داخل الدليل..." autocomplete="off" />
+          <button id="clearSearch" type="button" aria-label="مسح البحث">×</button>
+        </div>
+        <div class="filters" id="stageFilters"></div>
+      </section>
+
+      <section id="searchResults" class="results hidden"></section>
+
+      <section id="stages" class="stages"></section>
+
+      <section class="card guide-note">
+        <h2>طريقة الاستخدام</h2>
+        <p>اختر المرحلة، ثم اضغط على المادة لعرض المفردات أو الصفحات المتعلقة بها. البحث يعمل داخل أسماء المواد والنص الكامل المستخرج من الدليل.</p>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="تنقل سريع">
+      <a href="#stages">المراحل</a>
+      <a href="#search-section">البحث</a>
+      <a href="assets/geography-curriculum-2025-2026.pdf" target="_blank" rel="noopener">PDF</a>
+    </nav>
+  </div>
+
+  <dialog id="subjectDialog" class="subject-dialog">
+    <div class="dialog-header">
+      <button id="closeDialog" type="button" aria-label="إغلاق">×</button>
+      <div>
+        <p id="dialogStage" class="eyebrow"></p>
+        <h2 id="dialogTitle"></h2>
+      </div>
+    </div>
+    <div id="dialogMeta" class="meta-list"></div>
+    <div id="dialogContent" class="dialog-content"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
