@@ -12,19 +12,7 @@
 - `.nojekyll`: لتعطيل معالجة Jekyll في GitHub Pages.
 - `manifest.webmanifest` و `sw.js`: دعم أولي لتجربة تطبيق ويب.
 
-## النشر على GitHub Pages
-
-1. أنشئ مستودعاً جديداً في GitHub باسم مثل:
-   `geography-curriculum-2025-2026`
-2. ارفع كل ملفات هذا المجلد إلى المستودع، وليس المجلد الأب.
-3. ادخل إلى:
-   Settings > Pages
-4. اختر:
-   Source: Deploy from a branch
-5. اختر:
-   Branch: main
-   Folder: /root
-6. اضغط Save.
+## النشر على  Save.
 7. بعد دقيقة أو دقيقتين سيظهر رابط الموقع.
 
 ## ملاحظة تدقيق
